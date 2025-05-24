@@ -2,24 +2,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>注文送信テスト</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フォーム送信 (CORS回避版)</title>
 </head>
 <body>
-  <h1>注文テスト送信</h1>
-  <button onclick="sendOrder()">この内容で注文する</button>
+  <h1>注文テスト送信（フォーム形式）</h1>
+  <button onclick="submitOrder()">この内容で注文する</button>
   <script>
-    function sendOrder() {
+    function submitOrder() {
       const items = [
-        { name: "テスト商品", quantity: 1, total: 100 }
+        { name: "テスト商品", quantity: 2, total: 600 }
       ];
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(items));
       fetch("https://script.google.com/macros/s/AKfycbybfrJiJ3GS6Up4tBPzZydIKBPJtbEJ7tZhXiIf54IPBGlR3GtNYH9O9CAp1V8cOes/exec", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ items })
+        body: formData
       }).then(() => {
         alert("送信完了！");
       }).catch(() => {
