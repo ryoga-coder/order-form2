@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -23,7 +24,6 @@
 </head>
 <body>
   <header>キャンプ場 注文フォーム</header>
-
   <form id="orderForm">
     <div class="category">
       <h2 onclick="toggle(this)">食品</h2>
@@ -64,7 +64,6 @@
         <div class="item"><span>シュラフ (¥800)</span><input type="number" data-price="800" data-name="シュラフ" value="0" min="0"></div>
       </div>
     </div>
-
     <div id="total">合計金額: ¥0</div>
     <input type="submit" value="注文を確定する" />
   </form>
@@ -107,7 +106,7 @@
         };
       }).filter(item => item.quantity > 0);
 
-      fetch("https://script.google.com/macros/s/AKfycbx_JMWYFaUos1uithbspFZOwd72wXYpOawgT-dwPrZxf6nM5f65T4dZJHNncuKWbIw8/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbyxp3h4qxSKDkRBmSleJAlsxThB53OF2bI8GbRbMi7zeyePppgQO79CXqO4Ue3z8ALN/exec", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
