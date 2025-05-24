@@ -4,72 +4,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>キャンプ場注文フォーム</title>
+  <title>キャンプ場 注文フォーム</title>
   <style>
     body { font-family: sans-serif; margin: 0; padding: 0; background: #f2f2f2; }
     header { background: #4CAF50; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
-    form { padding: 1rem; max-width: 700px; margin: auto; }
-    .category { background: white; margin-bottom: 1rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    form, .confirmation { padding: 1rem; max-width: 700px; margin: auto; background: white; }
+    .category { margin-bottom: 1rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .category h2 { margin: 0; padding: 1rem; background: #e0e0e0; font-size: 1.2rem; cursor: pointer; }
     .item-list { display: none; padding: 1rem; }
     .item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 1rem; }
     .item input[type="number"] { width: 80px; font-size: 1rem; padding: 0.2rem; }
-    #total { text-align: center; font-size: 1.3rem; font-weight: bold; margin-top: 1rem; }
+    #total, .total-confirm { text-align: center; font-size: 1.3rem; font-weight: bold; margin-top: 1rem; }
     input[type="submit"] { width: 100%; padding: 1rem; font-size: 1.2rem; background: #4CAF50; color: white; border: none; border-radius: 5px; margin-top: 1rem; }
+    .confirmation { display: none; }
+    .confirmation ul { padding-left: 1rem; }
   </style>
 </head>
 <body>
   <header>キャンプ場 注文フォーム</header>
-  <form id="orderForm">
 
-    <!-- 各カテゴリ -->
+  <form id="orderForm">
     <div class="category">
       <h2 onclick="toggle(this)">食品</h2>
       <div class="item-list">
-        <div class="item"><span>カップラーメン (¥250)</span><input type="number" data-price="250" value="0" min="0"></div>
-        <div class="item"><span>缶ビール (¥300)</span><input type="number" data-price="300" value="0" min="0"></div>
-        <div class="item"><span>BBQセット (¥2000)</span><input type="number" data-price="2000" value="0" min="0"></div>
+        <div class="item"><span>カップラーメン (¥250)</span><input type="number" data-price="250" data-name="カップラーメン" value="0" min="0"></div>
+        <div class="item"><span>缶ビール (¥300)</span><input type="number" data-price="300" data-name="缶ビール" value="0" min="0"></div>
+        <div class="item"><span>BBQセット (¥2000)</span><input type="number" data-price="2000" data-name="BBQセット" value="0" min="0"></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">日用品</h2>
       <div class="item-list">
-        <div class="item"><span>歯ブラシ (¥100)</span><input type="number" data-price="100" value="0" min="0"></div>
-        <div class="item"><span>ウェットティッシュ (¥200)</span><input type="number" data-price="200" value="0" min="0"></div>
-        <div class="item"><span>虫除けスプレー (¥500)</span><input type="number" data-price="500" value="0" min="0"></div>
+        <div class="item"><span>歯ブラシ (¥100)</span><input type="number" data-price="100" data-name="歯ブラシ" value="0" min="0"></div>
+        <div class="item"><span>ウェットティッシュ (¥200)</span><input type="number" data-price="200" data-name="ウェットティッシュ" value="0" min="0"></div>
+        <div class="item"><span>虫除けスプレー (¥500)</span><input type="number" data-price="500" data-name="虫除けスプレー" value="0" min="0"></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">雑貨</h2>
       <div class="item-list">
-        <div class="item"><span>ランタン (¥1500)</span><input type="number" data-price="1500" value="0" min="0"></div>
-        <div class="item"><span>着火剤 (¥300)</span><input type="number" data-price="300" value="0" min="0"></div>
-        <div class="item"><span>紙皿セット (¥250)</span><input type="number" data-price="250" value="0" min="0"></div>
+        <div class="item"><span>ランタン (¥1500)</span><input type="number" data-price="1500" data-name="ランタン" value="0" min="0"></div>
+        <div class="item"><span>着火剤 (¥300)</span><input type="number" data-price="300" data-name="着火剤" value="0" min="0"></div>
+        <div class="item"><span>紙皿セット (¥250)</span><input type="number" data-price="250" data-name="紙皿セット" value="0" min="0"></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">薪</h2>
       <div class="item-list">
-        <div class="item"><span>薪1束 (¥600)</span><input type="number" data-price="600" value="0" min="0"></div>
-        <div class="item"><span>火起こしセット (¥1000)</span><input type="number" data-price="1000" value="0" min="0"></div>
+        <div class="item"><span>薪1束 (¥600)</span><input type="number" data-price="600" data-name="薪1束" value="0" min="0"></div>
+        <div class="item"><span>火起こしセット (¥1000)</span><input type="number" data-price="1000" data-name="火起こしセット" value="0" min="0"></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">レンタル品</h2>
       <div class="item-list">
-        <div class="item"><span>テント (¥3000)</span><input type="number" data-price="3000" value="0" min="0"></div>
-        <div class="item"><span>BBQコンロ (¥1500)</span><input type="number" data-price="1500" value="0" min="0"></div>
-        <div class="item"><span>シュラフ (¥800)</span><input type="number" data-price="800" value="0" min="0"></div>
+        <div class="item"><span>テント (¥3000)</span><input type="number" data-price="3000" data-name="テント" value="0" min="0"></div>
+        <div class="item"><span>BBQコンロ (¥1500)</span><input type="number" data-price="1500" data-name="BBQコンロ" value="0" min="0"></div>
+        <div class="item"><span>シュラフ (¥800)</span><input type="number" data-price="800" data-name="シュラフ" value="0" min="0"></div>
       </div>
     </div>
 
     <div id="total">合計金額: ¥0</div>
-    <input type="submit" value="注文を送信" />
+    <input type="submit" value="注文を確定する" />
   </form>
+
+  <div class="confirmation" id="confirmationScreen">
+    <h2>注文確認</h2>
+    <ul id="confirmationList"></ul>
+    <div class="total-confirm" id="finalTotal"></div>
+  </div>
 
   <script>
     function toggle(header) {
@@ -93,7 +96,23 @@
 
     document.getElementById("orderForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      alert("注文を受け付けました！");
+      const confirmationList = document.getElementById("confirmationList");
+      confirmationList.innerHTML = "";
+      let finalTotal = 0;
+      document.querySelectorAll('input[type="number"]').forEach(input => {
+        const name = input.dataset.name;
+        const price = parseInt(input.dataset.price);
+        const qty = parseInt(input.value);
+        if (qty > 0) {
+          const item = document.createElement("li");
+          item.textContent = `${name} × ${qty} = ¥${(price * qty).toLocaleString()}`;
+          confirmationList.appendChild(item);
+          finalTotal += price * qty;
+        }
+      });
+      document.getElementById("finalTotal").textContent = "合計金額: ¥" + finalTotal.toLocaleString();
+      document.getElementById("orderForm").style.display = "none";
+      document.getElementById("confirmationScreen").style.display = "block";
     });
 
     calculateTotal();
