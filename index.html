@@ -2,60 +2,103 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カフェ注文フォーム</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>注文フォーム</title>
     <style>
-        body { font-family: sans-serif; padding: 1em; background: #f9f9f9; }
-        form { max-width: 800px; margin: auto; background: #fff; padding: 1.5em; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1, h2, h3 { margin-top: 1.5em; }
-        .category, .subcategory, .item { margin: 1em 0; }
-        label, input, select { display: block; margin-top: 0.5em; }
-        input[type="number"] { width: 100px; }
-        #total { font-size: 1.2em; font-weight: bold; margin-top: 2em; }
-        .item-row { display: flex; align-items: center; gap: 1em; margin-bottom: 0.5em; }
+        body {
+            font-family: sans-serif;
+            background: #f4f4f4;
+            padding: 0;
+            margin: 0;
+        }
+        header {
+            background: #0077cc;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.5rem;
+        }
+        form {
+            padding: 1rem;
+        }
+        .category {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.3rem;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        .item input[type="number"] {
+            width: 80px;
+            font-size: 1.2rem;
+            padding: 0.2rem;
+        }
+        #total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background: #0077cc;
+            color: white;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
-    <h1>カフェ注文フォーム</h1>
+    <header>注文フォーム</header>
     <form id="orderForm">
         <div class="category">
-            <h2>飲み物</h2>
-            <div class="subcategory">
-                <h3>コーヒー系</h3>
-                <div class="item-row">
-                    <span>アイスコーヒー (¥300)</span>
-                    <input type="number" name="icecoffee" data-price="300" value="0" min="0">
-                </div>
-                <div class="item-row">
-                    <span>ホットコーヒー (¥320)</span>
-                    <input type="number" name="hotcoffee" data-price="320" value="0" min="0">
-                </div>
+            <h2>コーヒー系</h2>
+            <div class="item">
+                <span>アイスコーヒー (¥300)</span>
+                <input type="number" name="icecoffee" data-price="300" min="0" value="0" inputmode="numeric">
             </div>
-            <div class="subcategory">
-                <h3>お茶系</h3>
-                <div class="item-row">
-                    <span>緑茶 (¥250)</span>
-                    <input type="number" name="greentea" data-price="250" value="0" min="0">
-                </div>
-                <div class="item-row">
-                    <span>ほうじ茶 (¥260)</span>
-                    <input type="number" name="hojicha" data-price="260" value="0" min="0">
-                </div>
+            <div class="item">
+                <span>ホットコーヒー (¥320)</span>
+                <input type="number" name="hotcoffee" data-price="320" min="0" value="0" inputmode="numeric">
             </div>
         </div>
         <div class="category">
-            <h2>軽食</h2>
-            <div class="subcategory">
-                <h3>サンドイッチ</h3>
-                <div class="item-row">
-                    <span>ハムサンド (¥400)</span>
-                    <input type="number" name="hamsand" data-price="400" value="0" min="0">
-                </div>
-                <div class="item-row">
-                    <span>たまごサンド (¥380)</span>
-                    <input type="number" name="eggsand" data-price="380" value="0" min="0">
-                </div>
+            <h2>お茶系</h2>
+            <div class="item">
+                <span>緑茶 (¥250)</span>
+                <input type="number" name="greentea" data-price="250" min="0" value="0" inputmode="numeric">
+            </div>
+            <div class="item">
+                <span>ほうじ茶 (¥260)</span>
+                <input type="number" name="hojicha" data-price="260" min="0" value="0" inputmode="numeric">
+            </div>
+        </div>
+        <div class="category">
+            <h2>サンドイッチ</h2>
+            <div class="item">
+                <span>ハムサンド (¥400)</span>
+                <input type="number" name="hamsand" data-price="400" min="0" value="0" inputmode="numeric">
+            </div>
+            <div class="item">
+                <span>たまごサンド (¥380)</span>
+                <input type="number" name="eggsand" data-price="380" min="0" value="0" inputmode="numeric">
             </div>
         </div>
         <div id="total">合計金額: ¥0</div>
@@ -64,24 +107,20 @@
     <script>
         function calculateTotal() {
             let total = 0;
-            const inputs = document.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
                 const price = parseInt(input.dataset.price);
-                const qty = parseInt(input.value) || 0;
-                total += price * qty;
+                const quantity = parseInt(input.value) || 0;
+                total += price * quantity;
             });
             document.getElementById('total').textContent = "合計金額: ¥" + total.toLocaleString();
         }
-
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('input', calculateTotal);
         });
-
         document.getElementById('orderForm').addEventListener('submit', function(e) {
             e.preventDefault();
             alert("注文を受け付けました！");
         });
-
         calculateTotal();
     </script>
 </body>
