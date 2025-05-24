@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -15,7 +14,9 @@
     .item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 1rem; }
     .item input[type="number"] { width: 80px; font-size: 1rem; padding: 0.2rem; }
     #total, .total-confirm { text-align: center; font-size: 1.3rem; font-weight: bold; margin-top: 1rem; }
-    input[type="submit"] { width: 100%; padding: 1rem; font-size: 1.2rem; background: #4CAF50; color: white; border: none; border-radius: 5px; margin-top: 1rem; }
+    input[type="submit"], button { width: 100%; padding: 1rem; font-size: 1.2rem; border-radius: 5px; margin-top: 1rem; border: none; }
+    button.confirm { background: #4CAF50; color: white; }
+    button.back { background: #ccc; }
     .confirmation { display: none; }
     .confirmation ul { padding-left: 1rem; }
   </style>
@@ -71,11 +72,9 @@
   <div class="confirmation" id="confirmationScreen">
     <h2>注文確認</h2>
     <ul id="confirmationList"></ul>
-    
     <div class="total-confirm" id="finalTotal"></div>
-    <button type="button" onclick="goBack()" style="margin-top: 1em; padding: 1em; font-size: 1rem; width: 100%;">修正する</button>
-    <button type="button" onclick="submitOrder()" style="margin-top: 0.5em; padding: 1em; font-size: 1rem; width: 100%; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">この内容で注文する</button>
-    
+    <button class="back" onclick="goBack()">修正する</button>
+    <button class="confirm" onclick="submitOrder()">この内容で注文する</button>
   </div>
 
   <script>
@@ -92,6 +91,33 @@
         total += price * qty;
       });
       document.getElementById("total").textContent = "合計金額: ¥" + total.toLocaleString();
+    }
+
+    function goBack() {
+      document.getElementById("confirmationScreen").style.display = "none";
+      document.getElementById("orderForm").style.display = "block";
+    }
+
+    function submitOrder() {
+      const items = Array.from(document.querySelectorAll('input[type="number"]')).map(input => {
+        return {
+          name: input.dataset.name,
+          quantity: parseInt(input.value),
+          total: parseInt(input.dataset.price) * parseInt(input.value)
+        };
+      }).filter(item => item.quantity > 0);
+
+      fetch("https://script.google.com/macros/s/AKfycbx_JMWYFaUos1uithbspFZOwd72wXYpOawgT-dwPrZxf6nM5f65T4dZJHNncuKWbIw8/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ items })
+      }).then(() => {
+        document.getElementById("confirmationScreen").innerHTML = "<h2>ご注文ありがとうございました！</h2><p>スタッフが確認いたします。</p>";
+      }).catch(() => {
+        alert("送信に失敗しました。もう一度お試しください。");
+      });
     }
 
     document.querySelectorAll('input[type="number"]').forEach(input => {
@@ -120,17 +146,6 @@
     });
 
     calculateTotal();
-  
-    function goBack() {
-        document.getElementById("confirmationScreen").style.display = "none";
-        document.getElementById("orderForm").style.display = "block";
-    }
-
-    function submitOrder() {
-        alert("注文が送信されました！スタッフが確認いたします。");
-        document.getElementById("confirmationScreen").innerHTML = "<h2>ご注文ありがとうございました！</h2><p>スタッフが対応いたします。</p>";
-    }
-    </script>
-
+  </script>
 </body>
 </html>
