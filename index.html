@@ -71,7 +71,11 @@
   <div class="confirmation" id="confirmationScreen">
     <h2>注文確認</h2>
     <ul id="confirmationList"></ul>
+    
     <div class="total-confirm" id="finalTotal"></div>
+    <button type="button" onclick="goBack()" style="margin-top: 1em; padding: 1em; font-size: 1rem; width: 100%;">修正する</button>
+    <button type="button" onclick="submitOrder()" style="margin-top: 0.5em; padding: 1em; font-size: 1rem; width: 100%; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">この内容で注文する</button>
+    
   </div>
 
   <script>
@@ -116,6 +120,17 @@
     });
 
     calculateTotal();
-  </script>
+  
+    function goBack() {
+        document.getElementById("confirmationScreen").style.display = "none";
+        document.getElementById("orderForm").style.display = "block";
+    }
+
+    function submitOrder() {
+        alert("注文が送信されました！スタッフが確認いたします。");
+        document.getElementById("confirmationScreen").innerHTML = "<h2>ご注文ありがとうございました！</h2><p>スタッフが対応いたします。</p>";
+    }
+    </script>
+
 </body>
 </html>
