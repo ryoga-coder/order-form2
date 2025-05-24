@@ -3,148 +3,29 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>キャンプ場 注文フォーム</title>
-  <style>
-    body { font-family: sans-serif; margin: 0; padding: 0; background: #f2f2f2; }
-    header { background: #4CAF50; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
-    form, .confirmation { padding: 1rem; max-width: 700px; margin: auto; background: white; }
-    .category { margin-bottom: 1rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .category h2 { margin: 0; padding: 1rem; background: #e0e0e0; font-size: 1.2rem; cursor: pointer; }
-    .item-list { display: none; padding: 1rem; }
-    .item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; font-size: 1rem; }
-    .item input[type="number"] { width: 80px; font-size: 1rem; padding: 0.2rem; }
-    #total, .total-confirm { text-align: center; font-size: 1.3rem; font-weight: bold; margin-top: 1rem; }
-    input[type="submit"], button { width: 100%; padding: 1rem; font-size: 1.2rem; border-radius: 5px; margin-top: 1rem; border: none; }
-    button.confirm { background: #4CAF50; color: white; }
-    button.back { background: #ccc; }
-    .confirmation { display: none; }
-    .confirmation ul { padding-left: 1rem; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>注文送信テスト</title>
 </head>
 <body>
-  <header>キャンプ場 注文フォーム</header>
-  <form id="orderForm">
-    <div class="category">
-      <h2 onclick="toggle(this)">食品</h2>
-      <div class="item-list">
-        <div class="item"><span>カップラーメン (¥250)</span><input type="number" data-price="250" data-name="カップラーメン" value="0" min="0"></div>
-        <div class="item"><span>缶ビール (¥300)</span><input type="number" data-price="300" data-name="缶ビール" value="0" min="0"></div>
-        <div class="item"><span>BBQセット (¥2000)</span><input type="number" data-price="2000" data-name="BBQセット" value="0" min="0"></div>
-      </div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">日用品</h2>
-      <div class="item-list">
-        <div class="item"><span>歯ブラシ (¥100)</span><input type="number" data-price="100" data-name="歯ブラシ" value="0" min="0"></div>
-        <div class="item"><span>ウェットティッシュ (¥200)</span><input type="number" data-price="200" data-name="ウェットティッシュ" value="0" min="0"></div>
-        <div class="item"><span>虫除けスプレー (¥500)</span><input type="number" data-price="500" data-name="虫除けスプレー" value="0" min="0"></div>
-      </div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">雑貨</h2>
-      <div class="item-list">
-        <div class="item"><span>ランタン (¥1500)</span><input type="number" data-price="1500" data-name="ランタン" value="0" min="0"></div>
-        <div class="item"><span>着火剤 (¥300)</span><input type="number" data-price="300" data-name="着火剤" value="0" min="0"></div>
-        <div class="item"><span>紙皿セット (¥250)</span><input type="number" data-price="250" data-name="紙皿セット" value="0" min="0"></div>
-      </div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">薪</h2>
-      <div class="item-list">
-        <div class="item"><span>薪1束 (¥600)</span><input type="number" data-price="600" data-name="薪1束" value="0" min="0"></div>
-        <div class="item"><span>火起こしセット (¥1000)</span><input type="number" data-price="1000" data-name="火起こしセット" value="0" min="0"></div>
-      </div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">レンタル品</h2>
-      <div class="item-list">
-        <div class="item"><span>テント (¥3000)</span><input type="number" data-price="3000" data-name="テント" value="0" min="0"></div>
-        <div class="item"><span>BBQコンロ (¥1500)</span><input type="number" data-price="1500" data-name="BBQコンロ" value="0" min="0"></div>
-        <div class="item"><span>シュラフ (¥800)</span><input type="number" data-price="800" data-name="シュラフ" value="0" min="0"></div>
-      </div>
-    </div>
-    <div id="total">合計金額: ¥0</div>
-    <input type="submit" value="注文を確定する" />
-  </form>
-
-  <div class="confirmation" id="confirmationScreen">
-    <h2>注文確認</h2>
-    <ul id="confirmationList"></ul>
-    <div class="total-confirm" id="finalTotal"></div>
-    <button class="back" onclick="goBack()">修正する</button>
-    <button class="confirm" onclick="submitOrder()">この内容で注文する</button>
-  </div>
-
+  <h1>注文テスト送信</h1>
+  <button onclick="sendOrder()">この内容で注文する</button>
   <script>
-    function toggle(header) {
-      const list = header.nextElementSibling;
-      list.style.display = list.style.display === "block" ? "none" : "block";
-    }
-
-    function calculateTotal() {
-      let total = 0;
-      document.querySelectorAll('input[type="number"]').forEach(input => {
-        const price = parseInt(input.dataset.price);
-        const qty = parseInt(input.value) || 0;
-        total += price * qty;
-      });
-      document.getElementById("total").textContent = "合計金額: ¥" + total.toLocaleString();
-    }
-
-    function goBack() {
-      document.getElementById("confirmationScreen").style.display = "none";
-      document.getElementById("orderForm").style.display = "block";
-    }
-
-    function submitOrder() {
-      const items = Array.from(document.querySelectorAll('input[type="number"]')).map(input => {
-        return {
-          name: input.dataset.name,
-          quantity: parseInt(input.value),
-          total: parseInt(input.dataset.price) * parseInt(input.value)
-        };
-      }).filter(item => item.quantity > 0);
-
-      fetch("https://script.google.com/macros/s/AKfycbyxp3h4qxSKDkRBmSleJAlsxThB53OF2bI8GbRbMi7zeyePppgQO79CXqO4Ue3z8ALN/exec", {
+    function sendOrder() {
+      const items = [
+        { name: "テスト商品", quantity: 1, total: 100 }
+      ];
+      fetch("https://script.google.com/macros/s/AKfycbybfrJiJ3GS6Up4tBPzZydIKBPJtbEJ7tZhXiIf54IPBGlR3GtNYH9O9CAp1V8cOes/exec", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ items })
       }).then(() => {
-        document.getElementById("confirmationScreen").innerHTML = "<h2>ご注文ありがとうございました！</h2><p>スタッフが確認いたします。</p>";
+        alert("送信完了！");
       }).catch(() => {
-        alert("送信に失敗しました。もう一度お試しください。");
+        alert("送信失敗！");
       });
     }
-
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-      input.addEventListener("input", calculateTotal);
-    });
-
-    document.getElementById("orderForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const confirmationList = document.getElementById("confirmationList");
-      confirmationList.innerHTML = "";
-      let finalTotal = 0;
-      document.querySelectorAll('input[type="number"]').forEach(input => {
-        const name = input.dataset.name;
-        const price = parseInt(input.dataset.price);
-        const qty = parseInt(input.value);
-        if (qty > 0) {
-          const item = document.createElement("li");
-          item.textContent = `${name} × ${qty} = ¥${(price * qty).toLocaleString()}`;
-          confirmationList.appendChild(item);
-          finalTotal += price * qty;
-        }
-      });
-      document.getElementById("finalTotal").textContent = "合計金額: ¥" + finalTotal.toLocaleString();
-      document.getElementById("orderForm").style.display = "none";
-      document.getElementById("confirmationScreen").style.display = "block";
-    });
-
-    calculateTotal();
   </script>
 </body>
 </html>
