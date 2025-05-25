@@ -2,166 +2,70 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>キャンプ場 注文フォーム</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注文フォーム（商品マスタ連携）</title>
   <style>
-    body { font-family: sans-serif; background: #f0f0f0; padding: 1rem; }
-    h1 { text-align: center; }
-    .category { margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 5px; background: #fff; }
-    .category h2 { margin: 0; padding: 0.5rem; font-size: 1rem; background: #eee; cursor: pointer; }
-    .items { display: none; padding: 0.5rem 1rem; }
-    .item-row { display: flex; justify-content: space-between; margin: 0.5rem 0; }
-    .submit-btn, .confirm-btn { margin-top: 1.5rem; padding: 1rem; width: 100%; font-size: 1.1rem; background: #4caf50; color: white; border: none; border-radius: 5px; }
-    .total-bar { position: sticky; bottom: 0; background: #fff; padding: 1rem; font-weight: bold; text-align: right; border-top: 2px solid #ccc; }
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 1rem;
+    }
+    h1 {
+      text-align: center;
+    }
+    .category {
+      margin: 1rem 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #fff;
+    }
+    .category h2 {
+      margin: 0;
+      padding: 0.5rem;
+      background: #eee;
+      cursor: pointer;
+    }
+    .items {
+      padding: 0.5rem 1rem;
+      display: none;
+    }
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+    }
+    .total-bar {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      padding: 1rem;
+      font-weight: bold;
+      border-top: 2px solid #ccc;
+      text-align: right;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
     .confirm-screen, .thankyou-screen { display: none; }
     ul#orderList li { margin-bottom: 0.5rem; }
   </style>
 </head>
 <body>
-  <h1>キャンプ場 注文フォーム</h1>
+  <h1>注文フォーム</h1>
 
   <div class="form-screen">
     <form id="orderForm">
-      
-    <div class="category">
-      <h2 onclick="toggle(this)">食品</h2>
-      <div class="items"><div class="item-row"><label>おにぎり（¥200）</label><select data-name="おにぎり" data-price="200" data-category="食品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div>
-<div class="item-row"><label>カップ麺（¥300）</label><select data-name="カップ麺" data-price="300" data-category="食品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div></div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">日用品</h2>
-      <div class="items"><div class="item-row"><label>歯ブラシ（¥100）</label><select data-name="歯ブラシ" data-price="100" data-category="日用品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div>
-<div class="item-row"><label>ティッシュ（¥150）</label><select data-name="ティッシュ" data-price="150" data-category="日用品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div></div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">雑貨</h2>
-      <div class="items"><div class="item-row"><label>ステッカー（¥250）</label><select data-name="ステッカー" data-price="250" data-category="雑貨"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div>
-<div class="item-row"><label>ライター（¥180）</label><select data-name="ライター" data-price="180" data-category="雑貨"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div></div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">薪</h2>
-      <div class="items"><div class="item-row"><label>薪1束（¥600）</label><select data-name="薪1束" data-price="600" data-category="薪"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div></div>
-    </div>
-    <div class="category">
-      <h2 onclick="toggle(this)">レンタル品</h2>
-      <div class="items"><div class="item-row"><label>テント（¥3000）</label><select data-name="テント" data-price="3000" data-category="レンタル品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div>
-<div class="item-row"><label>焚き火台（¥1500）</label><select data-name="焚き火台" data-price="1500" data-category="レンタル品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div>
-<div class="item-row"><label>毛布（¥500）</label><select data-name="毛布" data-price="500" data-category="レンタル品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div>
-<div class="item-row"><label>寝袋（¥800）</label><select data-name="寝袋" data-price="800" data-category="レンタル品"><option value="0">0</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option></select></div></div>
-    </div>
+      <div id="formContent">読み込み中...</div>
       <div class="total-bar">合計金額: ¥<span id="totalAmount">0</span></div>
-      <button type="submit" class="submit-btn">注文内容を確認する</button>
+      <button type="submit">確認画面へ</button>
     </form>
   </div>
 
@@ -169,8 +73,8 @@
     <h2>注文内容確認</h2>
     <ul id="orderList"></ul>
     <p class="total-bar">合計金額: ¥<span id="confirmTotal">0</span></p>
-    <button class="confirm-btn" onclick="submitOrder()">この内容で注文する</button>
-    <button class="confirm-btn" onclick="goBack()">修正する</button>
+    <button onclick="submitOrder()">この内容で注文する</button>
+    <button onclick="goBack()">修正する</button>
   </div>
 
   <div class="thankyou-screen">
@@ -187,50 +91,22 @@
     const selects = [];
 
     function updateTotal() {
-      const sel = document.querySelectorAll("select");
-      selects.length = 0;
       let total = 0;
-      sel.forEach(s => {
-        const qty = parseInt(s.value);
+      selects.length = 0;
+      document.querySelectorAll("select").forEach(sel => {
+        const price = parseInt(sel.dataset.price);
+        const qty = parseInt(sel.value);
         if (qty > 0) {
-          const price = parseInt(s.dataset.price);
           total += price * qty;
-          selects.push(s);
+          selects.push(sel);
         }
       });
       document.getElementById("totalAmount").textContent = total.toLocaleString();
     }
 
-    document.querySelectorAll("select").forEach(s => s.addEventListener("change", updateTotal));
-    document.addEventListener("DOMContentLoaded", updateTotal);
-
-    const form = document.getElementById("orderForm");
-    const formScreen = document.querySelector(".form-screen");
-    const confirmScreen = document.querySelector(".confirm-screen");
-    const thankyouScreen = document.querySelector(".thankyou-screen");
-    const orderList = document.getElementById("orderList");
-
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      orderList.innerHTML = "";
-      let total = 0;
-      selects.forEach(s => {
-        const qty = parseInt(s.value);
-        const price = parseInt(s.dataset.price);
-        const name = s.dataset.name;
-        const li = document.createElement("li");
-        li.textContent = `${name} × ${qty} = ¥${qty * price}`;
-        orderList.appendChild(li);
-        total += qty * price;
-      });
-      document.getElementById("confirmTotal").textContent = total.toLocaleString();
-      formScreen.style.display = "none";
-      confirmScreen.style.display = "block";
-    });
-
     function goBack() {
-      confirmScreen.style.display = "none";
-      formScreen.style.display = "block";
+      document.querySelector(".confirm-screen").style.display = "none";
+      document.querySelector(".form-screen").style.display = "block";
     }
 
     function submitOrder() {
@@ -251,12 +127,68 @@
         method: "POST",
         body: formData
       }).then(() => {
-        confirmScreen.style.display = "none";
-        thankyouScreen.style.display = "block";
+        document.querySelector(".confirm-screen").style.display = "none";
+        document.querySelector(".thankyou-screen").style.display = "block";
       }).catch(() => {
         alert("送信に失敗しました。");
       });
     }
+
+    fetch("https://docs.google.com/spreadsheets/d/1pw8TRJvWMbGqAmv6GCEQjSK0zUxgDXslC-76DV9LpXY/gviz/tq?tqx=out:csv")
+      .then(res => res.text())
+      .then(csv => {
+        const rows = csv.trim().split("\n").map(r => r.split(","));
+        const header = rows[0];
+        const data = rows.slice(1);
+        const byCategory = {};
+
+        data.forEach(row => {
+          const [name, category, price] = row;
+          if (!byCategory[category]) byCategory[category] = [];
+          byCategory[category].push({ name, price: parseInt(price) });
+        });
+
+        const content = document.getElementById("formContent");
+        content.innerHTML = "";
+
+        for (let category in byCategory) {
+          const div = document.createElement("div");
+          div.className = "category";
+          div.innerHTML = `<h2 onclick="toggle(this)">${category}</h2>`;
+          const inner = document.createElement("div");
+          inner.className = "items";
+          inner.innerHTML = byCategory[category].map(item => `
+            <div class="item-row">
+              <label>${item.name}（¥${item.price}）</label>
+              <select data-name="${item.name}" data-price="${item.price}" data-category="${category}" onchange="updateTotal()">
+                <option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option>
+              </select>
+            </div>`).join("");
+          div.appendChild(inner);
+          content.appendChild(div);
+        }
+
+        updateTotal();
+
+        document.getElementById("orderForm").addEventListener("submit", function(e) {
+          e.preventDefault();
+          const list = document.getElementById("orderList");
+          list.innerHTML = "";
+          let total = 0;
+          selects.forEach(s => {
+            const qty = parseInt(s.value);
+            const price = parseInt(s.dataset.price);
+            const name = s.dataset.name;
+            const li = document.createElement("li");
+            li.textContent = `${name} × ${qty} = ¥${qty * price}`;
+            list.appendChild(li);
+            total += qty * price;
+          });
+          document.getElementById("confirmTotal").textContent = total.toLocaleString();
+          document.querySelector(".form-screen").style.display = "none";
+          document.querySelector(".confirm-screen").style.display = "block";
+        });
+      });
   </script>
 </body>
 </html>
