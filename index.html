@@ -4,56 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>注文フォーム（商品マスタ連携）</title>
+  <title>注文フォーム（修正版）</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f9f9f9;
-      padding: 1rem;
-    }
-    h1 {
-      text-align: center;
-    }
-    .category {
-      margin: 1rem 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #fff;
-    }
-    .category h2 {
-      margin: 0;
-      padding: 0.5rem;
-      background: #eee;
-      cursor: pointer;
-    }
-    .items {
-      padding: 0.5rem 1rem;
-      display: none;
-    }
-    .item-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 0.5rem 0;
-    }
-    .total-bar {
-      position: sticky;
-      bottom: 0;
-      background: #fff;
-      padding: 1rem;
-      font-weight: bold;
-      border-top: 2px solid #ccc;
-      text-align: right;
-    }
-    button {
-      width: 100%;
-      padding: 1rem;
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      background: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
+    body { font-family: sans-serif; background: #f9f9f9; padding: 1rem; }
+    h1 { text-align: center; }
+    .category { margin: 1rem 0; border: 1px solid #ccc; border-radius: 5px; background: #fff; }
+    .category h2 { margin: 0; padding: 0.5rem; background: #eee; cursor: pointer; }
+    .items { padding: 0.5rem 1rem; display: none; }
+    .item-row { display: flex; justify-content: space-between; margin: 0.5rem 0; }
+    .total-bar { position: sticky; bottom: 0; background: #fff; padding: 1rem; font-weight: bold; border-top: 2px solid #ccc; text-align: right; }
+    button { width: 100%; padding: 1rem; margin-top: 1rem; font-size: 1.1rem; background: #4caf50; color: white; border: none; border-radius: 5px; }
     .confirm-screen, .thankyou-screen { display: none; }
     ul#orderList li { margin-bottom: 0.5rem; }
   </style>
@@ -96,7 +56,7 @@
       document.querySelectorAll("select").forEach(sel => {
         const price = parseInt(sel.dataset.price);
         const qty = parseInt(sel.value);
-        if (qty > 0) {
+        if (qty > 0 && !isNaN(price)) {
           total += price * qty;
           selects.push(sel);
         }
@@ -134,18 +94,26 @@
       });
     }
 
+    function generateOptions() {
+      let options = "";
+      for (let i = 0; i <= 10; i++) {
+        options += `<option value="${i}">${i}</option>`;
+      }
+      return options;
+    }
+
     fetch("https://docs.google.com/spreadsheets/d/1pw8TRJvWMbGqAmv6GCEQjSK0zUxgDXslC-76DV9LpXY/gviz/tq?tqx=out:csv")
       .then(res => res.text())
       .then(csv => {
-        const rows = csv.trim().split("\n").map(r => r.split(","));
-        const header = rows[0];
+        const rows = csv.trim().split("\n").map(r => r.split(",").map(cell => cell.replace(/^"|"$/g, "")));
         const data = rows.slice(1);
         const byCategory = {};
 
         data.forEach(row => {
-          const [name, category, price] = row;
+          const [name, category, priceStr] = row;
+          const price = parseInt(priceStr.replace(/[^0-9]/g, ""));
           if (!byCategory[category]) byCategory[category] = [];
-          byCategory[category].push({ name, price: parseInt(price) });
+          byCategory[category].push({ name, price });
         });
 
         const content = document.getElementById("formContent");
@@ -161,7 +129,7 @@
             <div class="item-row">
               <label>${item.name}（¥${item.price}）</label>
               <select data-name="${item.name}" data-price="${item.price}" data-category="${category}" onchange="updateTotal()">
-                <option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option><option value="{i}">{i}</option>
+                ${generateOptions()}
               </select>
             </div>`).join("");
           div.appendChild(inner);
