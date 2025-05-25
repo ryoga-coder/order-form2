@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>注文一覧（店員用・スマホ最適化）</title>
+  <title>注文一覧（グループ化）</title>
   <style>
     body {
       font-family: sans-serif;
-      padding: 1rem;
       background: #f5f5f5;
+      padding: 1rem;
     }
     h1 {
       text-align: center;
@@ -25,27 +25,36 @@
     .order {
       background: white;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      padding: 0.8rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 1rem;
       margin-bottom: 1rem;
     }
-    .order-time {
+    .order-header {
       font-weight: bold;
-      font-size: 0.9rem;
-      color: #333;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .order-items {
+      margin-left: 1rem;
       margin-bottom: 0.5rem;
     }
-    .order-detail {
-      font-size: 1.1rem;
+    .order-items li {
+      list-style: none;
+      margin-bottom: 0.25rem;
+    }
+    .total {
+      font-weight: bold;
+      text-align: right;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <h1>注文一覧（店員用）</h1>
+  <h1>注文一覧（レジ単位まとめ）</h1>
   <label for="datePicker">日付で絞り込み:</label>
   <input type="date" id="datePicker" />
   <button onclick="loadData()">更新</button>
-  <div id="orderContainer"></div>
+  <div id="orders"></div>
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/1mYc4Dzjmzc07lDHZDLCPLi_nUrIkEvMuoAmB65LHIX0/gviz/tq?tqx=out:csv";
@@ -64,25 +73,40 @@
         .then(csv => {
           const data = parseCSV(csv);
           const selectedDate = document.getElementById("datePicker").value;
-          const container = document.getElementById("orderContainer");
-          container.innerHTML = "";
+          const grouped = {};
 
           data.forEach(row => {
-            const datetime = clean(row[0]);
+            const time = clean(row[0]);
             const item = clean(row[1]);
-            const qty = clean(row[2]);
-            const total = clean(row[3]);
-            const dateOnly = datetime.split(" ")[0];
+            const qty = parseInt(clean(row[2]));
+            const total = parseInt(clean(row[3]));
+            const dateOnly = time.split(" ")[0];
 
-            if (!selectedDate || dateOnly === selectedDate) {
-              const div = document.createElement("div");
-              div.className = "order";
-              div.innerHTML = `
-                <div class="order-time">${datetime}</div>
-                <div class="order-detail">${item} × ${qty}　¥${Number(total).toLocaleString()}</div>
-              `;
-              container.appendChild(div);
+            if (!selectedDate || selectedDate === dateOnly) {
+              if (!grouped[time]) grouped[time] = [];
+              grouped[time].push({ item, qty, total });
             }
+          });
+
+          const container = document.getElementById("orders");
+          container.innerHTML = "";
+
+          Object.keys(grouped).sort().reverse().forEach(time => {
+            const orders = grouped[time];
+            let totalSum = 0;
+            const ul = orders.map(o => {
+              totalSum += o.total;
+              return `<li>${o.item} × ${o.qty}　¥${o.total.toLocaleString()}</li>`;
+            }).join("");
+
+            const div = document.createElement("div");
+            div.className = "order";
+            div.innerHTML = `
+              <div class="order-header">🕒 ${time}</div>
+              <ul class="order-items">${ul}</ul>
+              <div class="total">合計: ¥${totalSum.toLocaleString()}</div>
+            `;
+            container.appendChild(div);
           });
         });
     }
