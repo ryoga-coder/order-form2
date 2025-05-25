@@ -3,26 +3,149 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>キャンプ場注文フォーム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>キャンプ場 注文フォーム</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 1rem; background: #f9f9f9; }
+    h1 { text-align: center; }
+    .category { margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 6px; background: white; }
+    .category h2 { margin: 0; padding: 0.8rem; background: #eee; cursor: pointer; font-size: 1.1rem; }
+    .items { display: none; padding: 0.8rem; }
+    .item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .item input[type="number"] { width: 60px; }
+    button, input[type="submit"] {
+      width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1rem; border: none; border-radius: 6px;
+    }
+    .confirm { background: #4CAF50; color: white; }
+    .back { background: #bbb; }
+    #confirmationScreen, #resultScreen { display: none; }
+  </style>
 </head>
 <body>
-  <h1>注文送信テスト</h1>
-  <button onclick="sendOrder()">この内容で注文する</button>
+  <h1>キャンプ場 注文フォーム</h1>
+
+  <form id="orderForm">
+    <div class="category">
+      <h2 onclick="toggle(this)">食品</h2>
+      <div class="items">
+        <div class="item"><span>カップラーメン (¥250)</span><input type="number" data-name="カップラーメン" data-price="250" value="0" min="0"></div>
+        <div class="item"><span>缶ビール (¥300)</span><input type="number" data-name="缶ビール" data-price="300" value="0" min="0"></div>
+        <div class="item"><span>BBQセット (¥2000)</span><input type="number" data-name="BBQセット" data-price="2000" value="0" min="0"></div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 onclick="toggle(this)">日用品</h2>
+      <div class="items">
+        <div class="item"><span>歯ブラシ (¥100)</span><input type="number" data-name="歯ブラシ" data-price="100" value="0" min="0"></div>
+        <div class="item"><span>ウェットティッシュ (¥200)</span><input type="number" data-name="ウェットティッシュ" data-price="200" value="0" min="0"></div>
+        <div class="item"><span>虫除けスプレー (¥500)</span><input type="number" data-name="虫除けスプレー" data-price="500" value="0" min="0"></div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 onclick="toggle(this)">雑貨</h2>
+      <div class="items">
+        <div class="item"><span>ランタン (¥1500)</span><input type="number" data-name="ランタン" data-price="1500" value="0" min="0"></div>
+        <div class="item"><span>着火剤 (¥300)</span><input type="number" data-name="着火剤" data-price="300" value="0" min="0"></div>
+        <div class="item"><span>紙皿セット (¥250)</span><input type="number" data-name="紙皿セット" data-price="250" value="0" min="0"></div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 onclick="toggle(this)">薪</h2>
+      <div class="items">
+        <div class="item"><span>薪1束 (¥600)</span><input type="number" data-name="薪1束" data-price="600" value="0" min="0"></div>
+        <div class="item"><span>火起こしセット (¥1000)</span><input type="number" data-name="火起こしセット" data-price="1000" value="0" min="0"></div>
+      </div>
+    </div>
+
+    <div class="category">
+      <h2 onclick="toggle(this)">レンタル品</h2>
+      <div class="items">
+        <div class="item"><span>テント (¥3000)</span><input type="number" data-name="テント" data-price="3000" value="0" min="0"></div>
+        <div class="item"><span>BBQコンロ (¥1500)</span><input type="number" data-name="BBQコンロ" data-price="1500" value="0" min="0"></div>
+        <div class="item"><span>シュラフ (¥800)</span><input type="number" data-name="シュラフ" data-price="800" value="0" min="0"></div>
+      </div>
+    </div>
+
+    <input type="submit" value="注文を確認する">
+  </form>
+
+  <div id="confirmationScreen">
+    <h2>注文確認</h2>
+    <ul id="orderList"></ul>
+    <p id="totalPrice"></p>
+    <button class="confirm" onclick="submitOrder()">この内容で注文する</button>
+    <button class="back" onclick="goBack()">修正する</button>
+  </div>
+
+  <div id="resultScreen">
+    <h2>注文ありがとうございました！</h2>
+    <p>スタッフが確認いたします。</p>
+  </div>
+
   <script>
-    function sendOrder() {
-      const items = [
-        { name: "テスト商品", quantity: 1, total: 100 }
-      ];
+    function toggle(header) {
+      const items = header.nextElementSibling;
+      items.style.display = items.style.display === "block" ? "none" : "block";
+    }
+
+    const form = document.getElementById("orderForm");
+    const confirmScreen = document.getElementById("confirmationScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const orderList = document.getElementById("orderList");
+      orderList.innerHTML = "";
+      let total = 0;
+      const inputs = document.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => {
+        const qty = parseInt(input.value);
+        const name = input.dataset.name;
+        const price = parseInt(input.dataset.price);
+        if (qty > 0) {
+          const li = document.createElement("li");
+          li.textContent = `${name} × ${qty} = ¥${qty * price}`;
+          orderList.appendChild(li);
+          total += qty * price;
+        }
+      });
+      if (total > 0) {
+        document.getElementById("totalPrice").textContent = "合計金額: ¥" + total.toLocaleString();
+        form.style.display = "none";
+        confirmScreen.style.display = "block";
+      } else {
+        alert("1つ以上の商品を選んでください。");
+      }
+    });
+
+    function goBack() {
+      confirmScreen.style.display = "none";
+      form.style.display = "block";
+    }
+
+    function submitOrder() {
+      const items = Array.from(document.querySelectorAll('input[type=number]')).map(input => {
+        return {
+          name: input.dataset.name,
+          quantity: parseInt(input.value),
+          total: parseInt(input.dataset.price) * parseInt(input.value)
+        };
+      }).filter(item => item.quantity > 0);
+
       const formData = new FormData();
       formData.append("data", JSON.stringify(items));
+
       fetch("https://script.google.com/macros/s/AKfycbwVOY0V0KoS1gBPaZC0q2Hsrq2wjYZ3X41fN0gCSlGLP2jZ1fEzQs6CZ5BuVk_3be4J/exec", {
         method: "POST",
         body: formData
       }).then(() => {
-        alert("送信完了！");
+        document.getElementById("confirmationScreen").style.display = "none";
+        document.getElementById("resultScreen").style.display = "block";
       }).catch(() => {
-        alert("送信失敗！");
+        alert("送信に失敗しました。");
       });
     }
   </script>
