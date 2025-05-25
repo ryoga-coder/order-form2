@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>注文一覧（グループ化）</title>
+  <title>注文一覧（削除対応）</title>
   <style>
     body {
       font-family: sans-serif;
@@ -13,14 +13,6 @@
     }
     h1 {
       text-align: center;
-    }
-    label {
-      font-weight: bold;
-    }
-    input[type="date"], button {
-      padding: 0.4rem;
-      font-size: 1rem;
-      margin-bottom: 1rem;
     }
     .order {
       background: white;
@@ -32,7 +24,6 @@
     .order-header {
       font-weight: bold;
       margin-bottom: 0.5rem;
-      font-size: 0.95rem;
     }
     .order-items {
       margin-left: 1rem;
@@ -41,23 +32,41 @@
     .order-items li {
       list-style: none;
       margin-bottom: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-items button {
+      margin-left: 10px;
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
     }
     .total {
       font-weight: bold;
       text-align: right;
       color: #333;
     }
+    input[type="date"], button.refresh {
+      padding: 0.4rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
-  <h1>注文一覧（レジ単位まとめ）</h1>
+  <h1>注文一覧（削除対応）</h1>
   <label for="datePicker">日付で絞り込み:</label>
   <input type="date" id="datePicker" />
-  <button onclick="loadData()">更新</button>
+  <button class="refresh" onclick="loadData()">更新</button>
   <div id="orders"></div>
 
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/1mYc4Dzjmzc07lDHZDLCPLi_nUrIkEvMuoAmB65LHIX0/gviz/tq?tqx=out:csv";
+    const DELETE_ENDPOINT = "https://script.google.com/macros/s/AKfycbwVOY0V0KoS1gBPaZC0q2Hsrq2wjYZ3X41fN0gCSlGLP2jZ1fEzQs6CZ5BuVk_3be4J/exec";
 
     function parseCSV(text) {
       return text.trim().split("\n").slice(1).map(row => row.split(","));
@@ -76,39 +85,68 @@
           const grouped = {};
 
           data.forEach(row => {
-            const time = clean(row[0]);
-            const item = clean(row[1]);
-            const qty = parseInt(clean(row[2]));
-            const total = parseInt(clean(row[3]));
+            const orderId = clean(row[0]);
+            const time = clean(row[1]);
+            const item = clean(row[2]);
+            const qty = parseInt(clean(row[3]));
+            const total = parseInt(clean(row[4]));
             const dateOnly = time.split(" ")[0];
 
             if (!selectedDate || selectedDate === dateOnly) {
-              if (!grouped[time]) grouped[time] = [];
-              grouped[time].push({ item, qty, total });
+              if (!grouped[orderId]) grouped[orderId] = { time: time, items: [] };
+              grouped[orderId].items.push({ item, qty, total });
             }
           });
 
           const container = document.getElementById("orders");
           container.innerHTML = "";
 
-          Object.keys(grouped).sort().reverse().forEach(time => {
-            const orders = grouped[time];
+          Object.keys(grouped).sort().reverse().forEach(orderId => {
+            const block = grouped[orderId];
+            const orders = block.items;
             let totalSum = 0;
             const ul = orders.map(o => {
               totalSum += o.total;
-              return `<li>${o.item} × ${o.qty}　¥${o.total.toLocaleString()}</li>`;
+              return `<li>${block.time}<br>${o.item} × ${o.qty} ¥${o.total}
+                <button onclick='deleteItem("${orderId}", "${o.item}", ${o.qty}, ${o.total}, this)'>削除</button></li>`;
             }).join("");
 
             const div = document.createElement("div");
             div.className = "order";
             div.innerHTML = `
-              <div class="order-header">🕒 ${time}</div>
+              <div class="order-header">🆔 ${orderId}</div>
               <ul class="order-items">${ul}</ul>
               <div class="total">合計: ¥${totalSum.toLocaleString()}</div>
             `;
             container.appendChild(div);
           });
         });
+    }
+
+    function deleteItem(orderId, item, qty, total, button) {
+      if (!confirm("この商品を削除しますか？")) return;
+
+      const formData = new FormData();
+      formData.append("mode", "delete");
+      formData.append("orderId", orderId);
+      formData.append("item", item);
+      formData.append("quantity", qty);
+      formData.append("total", total);
+
+      fetch(DELETE_ENDPOINT, {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.text())
+      .then(result => {
+        if (result === "OK") {
+          const li = button.closest("li");
+          li.remove();
+        } else {
+          alert("削除に失敗しました：" + result);
+        }
+      })
+      .catch(() => alert("通信エラーが発生しました"));
     }
 
     loadData();
