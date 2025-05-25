@@ -4,19 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>フォーム送信 (CORS回避版)</title>
+  <title>キャンプ場注文フォーム</title>
 </head>
 <body>
-  <h1>注文テスト送信（フォーム形式）</h1>
-  <button onclick="submitOrder()">この内容で注文する</button>
+  <h1>注文送信テスト</h1>
+  <button onclick="sendOrder()">この内容で注文する</button>
   <script>
-    function submitOrder() {
+    function sendOrder() {
       const items = [
-        { name: "テスト商品", quantity: 2, total: 600 }
+        { name: "テスト商品", quantity: 1, total: 100 }
       ];
       const formData = new FormData();
       formData.append("data", JSON.stringify(items));
-      fetch("https://script.google.com/macros/s/AKfycbybfrJiJ3GS6Up4tBPzZydIKBPJtbEJ7tZhXiIf54IPBGlR3GtNYH9O9CAp1V8cOes/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwVOY0V0KoS1gBPaZC0q2Hsrq2wjYZ3X41fN0gCSlGLP2jZ1fEzQs6CZ5BuVk_3be4J/exec", {
         method: "POST",
         body: formData
       }).then(() => {
