@@ -13,16 +13,18 @@
     .items { display: none; padding: 0.5rem 1rem; }
     .item-row { display: flex; justify-content: space-between; margin: 0.5rem 0; }
     .submit-btn { margin-top: 2rem; padding: 1rem; width: 100%; font-size: 1.2rem; background: #4caf50; color: white; border: none; border-radius: 5px; }
+    .total-bar { position: sticky; bottom: 0; background: #fff; padding: 1rem; font-weight: bold; text-align: right; border-top: 2px solid #ccc; }
   </style>
 </head>
 <body>
   <h1>キャンプ場 注文フォーム</h1>
 
   <form id="orderForm">
+    
     <div class="category">
       <h2 onclick="toggle(this)">食品</h2>
       <div class="items">
-        <div class="item-row"><label>おにぎり</label><select name="おにぎり"><option value="0">0</option>
+        <div class="item-row"><label>おにぎり（¥200）</label><select name="おにぎり" data-price="200" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -33,7 +35,7 @@
 <option value="8">8</option>
 <option value="9">9</option>
 <option value="10">10</option></select></div>
-        <div class="item-row"><label>カップ麺</label><select name="カップ麺"><option value="0">0</option>
+<div class="item-row"><label>カップ麺（¥300）</label><select name="カップ麺" data-price="300" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -46,11 +48,10 @@
 <option value="10">10</option></select></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">日用品</h2>
       <div class="items">
-        <div class="item-row"><label>歯ブラシ</label><select name="歯ブラシ"><option value="0">0</option>
+        <div class="item-row"><label>歯ブラシ（¥100）</label><select name="歯ブラシ" data-price="100" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -61,7 +62,7 @@
 <option value="8">8</option>
 <option value="9">9</option>
 <option value="10">10</option></select></div>
-        <div class="item-row"><label>ティッシュ</label><select name="ティッシュ"><option value="0">0</option>
+<div class="item-row"><label>ティッシュ（¥150）</label><select name="ティッシュ" data-price="150" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -74,11 +75,10 @@
 <option value="10">10</option></select></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">雑貨</h2>
       <div class="items">
-        <div class="item-row"><label>ステッカー</label><select name="ステッカー"><option value="0">0</option>
+        <div class="item-row"><label>ステッカー（¥250）</label><select name="ステッカー" data-price="250" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -89,7 +89,7 @@
 <option value="8">8</option>
 <option value="9">9</option>
 <option value="10">10</option></select></div>
-        <div class="item-row"><label>ライター</label><select name="ライター"><option value="0">0</option>
+<div class="item-row"><label>ライター（¥180）</label><select name="ライター" data-price="180" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -102,11 +102,10 @@
 <option value="10">10</option></select></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">薪</h2>
       <div class="items">
-        <div class="item-row"><label>薪1束</label><select name="薪1束"><option value="0">0</option>
+        <div class="item-row"><label>薪1束（¥600）</label><select name="薪1束" data-price="600" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -119,11 +118,10 @@
 <option value="10">10</option></select></div>
       </div>
     </div>
-
     <div class="category">
       <h2 onclick="toggle(this)">レンタル品</h2>
       <div class="items">
-        <div class="item-row"><label>テント</label><select name="テント"><option value="0">0</option>
+        <div class="item-row"><label>テント（¥3000）</label><select name="テント" data-price="3000" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -134,7 +132,7 @@
 <option value="8">8</option>
 <option value="9">9</option>
 <option value="10">10</option></select></div>
-        <div class="item-row"><label>焚き火台</label><select name="焚き火台"><option value="0">0</option>
+<div class="item-row"><label>焚き火台（¥1500）</label><select name="焚き火台" data-price="1500" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -145,7 +143,7 @@
 <option value="8">8</option>
 <option value="9">9</option>
 <option value="10">10</option></select></div>
-        <div class="item-row"><label>毛布</label><select name="毛布"><option value="0">0</option>
+<div class="item-row"><label>毛布（¥500）</label><select name="毛布" data-price="500" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -156,7 +154,7 @@
 <option value="8">8</option>
 <option value="9">9</option>
 <option value="10">10</option></select></div>
-        <div class="item-row"><label>寝袋</label><select name="寝袋"><option value="0">0</option>
+<div class="item-row"><label>寝袋（¥800）</label><select name="寝袋" data-price="800" onchange="updateTotal()"><option value="0">0</option>
 <option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
@@ -169,7 +167,7 @@
 <option value="10">10</option></select></div>
       </div>
     </div>
-
+    <div class="total-bar">合計金額: ¥<span id="totalAmount">0</span></div>
     <button type="submit" class="submit-btn">注文内容を確認する</button>
   </form>
 
@@ -178,6 +176,18 @@
       const content = elem.nextElementSibling;
       content.style.display = content.style.display === "block" ? "none" : "block";
     }
+
+    function updateTotal() {
+      let total = 0;
+      document.querySelectorAll("select").forEach(sel => {
+        const price = parseInt(sel.dataset.price);
+        const quantity = parseInt(sel.value);
+        total += price * quantity;
+      });
+      document.getElementById("totalAmount").textContent = total.toLocaleString();
+    }
+
+    document.addEventListener("DOMContentLoaded", updateTotal);
   </script>
 </body>
 </html>
