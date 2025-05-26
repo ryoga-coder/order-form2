@@ -1,13 +1,257 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>高齢者対応 注文フォーム</title>
-  <!-- 略：UI・サブカテゴリ・確認・送信含む完全版（省略部分は前回答参照） -->
-  <style>body{font-family:sans-serif;}</style>
+  <title>キャンプ場 注文フォーム</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; padding: 1rem; }
+    h1 { text-align: center; font-size: 1.8rem; margin-bottom: 1rem; }
+    .category, .subcategory { margin-bottom: 1rem; background: #fff; border-radius: 6px; overflow: hidden; }
+    .category h2, .subcategory h3 {
+      margin: 0;
+      padding: 1rem;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .subcategory h3 {
+      background: #f0f0f0;
+      padding-left: 1.5rem;
+    }
+    .items { padding: 0.5rem 1rem; display: none; }
+    .item-button {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      font-size: 1.2rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    .quantity-screen, .confirm-screen, .thankyou-screen {
+      display: none;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+    .quantity-picker { margin: 1rem 0; font-size: 1.2rem; }
+    select { font-size: 1.2rem; padding: 0.3rem; }
+    .back-btn, .confirm-btn {
+      padding: 0.7rem 1rem;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 5px;
+    }
+    .back-btn { background: #aaa; color: white; }
+    .confirm-btn { background: #4CAF50; color: white; }
+    .total-bar {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      padding: 1rem;
+      font-weight: bold;
+      border-top: 2px solid #ccc;
+      text-align: right;
+      font-size: 1.2rem;
+    }
+  </style>
 </head>
 <body>
-  <p>完全版 HTML 復元中です。続きのコードを再構築中...</p>
+  <h1>キャンプ場 注文フォーム</h1>
+
+  <div class="form-screen">
+    <div id="formContent">読み込み中...</div>
+    <div class="total-bar">合計金額: ¥<span id="totalAmount">0</span></div>
+  </div>
+
+  <div class="quantity-screen">
+    <h2 id="selectedItemName">商品名</h2>
+    <div class="quantity-picker">
+      <label for="quantitySelect">数量：</label>
+      <select id="quantitySelect"></select>
+    </div>
+    <button class="confirm-btn" id="quantityConfirm">追加する</button>
+    <button class="back-btn" onclick="goBackToForm()">戻る</button>
+  </div>
+
+  <div class="confirm-screen">
+    <h2>注文確認</h2>
+    <ul id="orderList"></ul>
+    <div class="total-bar">合計金額: ¥<span id="confirmTotal">0</span></div>
+    <button class="confirm-btn" onclick="submitOrder()">この内容で注文する</button>
+    <button class="back-btn" onclick="goBackToForm()">修正する</button>
+  </div>
+
+  <div class="thankyou-screen">
+    <h2>注文が送信されました！</h2>
+    <p>ありがとうございました。</p>
+  </div>
+
+  <script>
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/1pw8TRJvWMbGqAmv6GCEQjSK0zUxgDXslC-76DV9LpXY/gviz/tq?tqx=out:csv";
+    const gasUrl = "https://script.google.com/macros/s/AKfycbwVOY0V0KoS1gBPaZC0q2Hsrq2wjYZ3X41fN0gCSlGLP2jZ1fEzQs6CZ5BuVk_3be4J/exec";
+    const orderData = [];
+    let selectedItem = null;
+
+    function toggle(elem) {
+      const content = elem.nextElementSibling;
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    }
+
+    function goBackToForm() {
+      document.querySelector(".form-screen").style.display = "block";
+      document.querySelector(".quantity-screen").style.display = "none";
+      document.querySelector(".confirm-screen").style.display = "none";
+      updateTotal();
+    }
+
+    function showQuantityScreen(item) {
+      selectedItem = item;
+      document.getElementById("selectedItemName").textContent = item.name + "（¥" + item.price + "）";
+      document.querySelector(".form-screen").style.display = "none";
+      document.querySelector(".quantity-screen").style.display = "block";
+    }
+
+    document.getElementById("quantityConfirm").onclick = () => {
+      const qty = parseInt(document.getElementById("quantitySelect").value);
+      if (qty > 0) {
+        const existing = orderData.find(d => d.name === selectedItem.name);
+        if (existing) {
+          existing.quantity += qty;
+        } else {
+          orderData.push({ ...selectedItem, quantity: qty });
+        }
+      }
+      goBackToForm();
+    };
+
+    function updateTotal() {
+      const total = orderData.reduce((sum, item) => sum + item.quantity * item.price, 0);
+      document.getElementById("totalAmount").textContent = total.toLocaleString();
+    }
+
+    function buildConfirmScreen() {
+      const list = document.getElementById("orderList");
+      list.innerHTML = "";
+      let total = 0;
+
+      orderData.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `${item.name} × <input type="number" min="0" max="10" value="${item.quantity}" onchange="changeQty('${item.name}', this.value)"> = ¥${item.quantity * item.price}`;
+        list.appendChild(li);
+        total += item.quantity * item.price;
+      });
+
+      document.getElementById("confirmTotal").textContent = total.toLocaleString();
+    }
+
+    function changeQty(name, qty) {
+      const item = orderData.find(i => i.name === name);
+      item.quantity = parseInt(qty);
+      buildConfirmScreen();
+    }
+
+    function submitOrder() {
+      const orderId = crypto.randomUUID();
+      const payload = orderData.map(item => ({
+        orderId,
+        name: item.name,
+        category: item.category,
+        quantity: item.quantity,
+        total: item.quantity * item.price
+      }));
+
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(payload));
+
+      fetch(gasUrl, {
+        method: "POST",
+        body: formData
+      }).then(() => {
+        document.querySelector(".confirm-screen").style.display = "none";
+        document.querySelector(".thankyou-screen").style.display = "block";
+      }).catch(() => {
+        alert("送信に失敗しました。");
+      });
+    }
+
+    fetch(sheetUrl)
+      .then(res => res.text())
+      .then(csv => {
+        const rows = csv.trim().split("\n").map(r => r.split(","));
+        const data = rows.slice(1);
+        const structure = {};
+
+        data.forEach(([name, category, subcategory, price]) => {
+          if (!structure[category]) structure[category] = {};
+          const key = subcategory || "_";
+          if (!structure[category][key]) structure[category][key] = [];
+          structure[category][key].push({ name, price: parseInt(price), category });
+        });
+
+        const content = document.getElementById("formContent");
+        content.innerHTML = "";
+
+        for (let cat in structure) {
+          const catDiv = document.createElement("div");
+          catDiv.className = "category";
+          catDiv.innerHTML = `<h2 onclick="toggle(this)">${cat}</h2>`;
+          const catContent = document.createElement("div");
+          catContent.className = "items";
+
+          for (let sub in structure[cat]) {
+            if (sub === "_") {
+              structure[cat][sub].forEach(item => {
+                const btn = document.createElement("button");
+                btn.className = "item-button";
+                btn.textContent = `${item.name}（¥${item.price}）`;
+                btn.onclick = () => showQuantityScreen(item);
+                catContent.appendChild(btn);
+              });
+            } else {
+              const subDiv = document.createElement("div");
+              subDiv.className = "subcategory";
+              subDiv.innerHTML = `<h3 onclick="toggle(this)">${sub}</h3>`;
+              const subItems = document.createElement("div");
+              subItems.className = "items";
+              structure[cat][sub].forEach(item => {
+                const btn = document.createElement("button");
+                btn.className = "item-button";
+                btn.textContent = `${item.name}（¥${item.price}）`;
+                btn.onclick = () => showQuantityScreen(item);
+                subItems.appendChild(btn);
+              });
+              subDiv.appendChild(subItems);
+              catContent.appendChild(subDiv);
+            }
+          }
+
+          catDiv.appendChild(catContent);
+          content.appendChild(catDiv);
+        }
+
+        const confirmBtn = document.createElement("button");
+        confirmBtn.className = "confirm-btn";
+        confirmBtn.textContent = "注文内容を確認する";
+        confirmBtn.onclick = () => {
+          buildConfirmScreen();
+          document.querySelector(".form-screen").style.display = "none";
+          document.querySelector(".confirm-screen").style.display = "block";
+        };
+        content.appendChild(confirmBtn);
+
+        const select = document.getElementById("quantitySelect");
+        for (let i = 0; i <= 10; i++) {
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = i;
+          select.appendChild(opt);
+        }
+      });
+  </script>
 </body>
 </html>
